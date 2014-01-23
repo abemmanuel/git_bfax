@@ -15,6 +15,7 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -29,8 +30,8 @@ public class Building extends ListActivity {
 
 	// URL to get contacts JSON
 	//private static String url = "http://api.androidhive.info/contacts/";
-	private static String url = "https://data.cityofchicago.org/resource/building-permits.json?%24select=street_number%2Cstreet_direction%2Cstreet_name%2C_issue_date%2Clatitude%2Clongitude%2C_permit_type%2Cwork_description%2Cpermit_&%24where=street_number%20=%20611%20and%20street_name%20=%20%27WELLS%27";
-	
+	//private static String url = "https://data.cityofchicago.org/resource/building-permits.json?%24select=street_number%2Cstreet_direction%2Cstreet_name%2C_issue_date%2Clatitude%2Clongitude%2C_permit_type%2Cwork_description%2Cpermit_&%24where=street_number%20=%20611%20and%20street_name%20=%20%27WELLS%27";
+	private static String url = null;
 	// JSON Node names
 	private static final String TAG_CONTACTS = "contacts";
 	//private static final String TAG_ID = "id";
@@ -61,7 +62,10 @@ public class Building extends ListActivity {
 		contactList = new ArrayList<HashMap<String, String>>();
 
 		ListView lv = getListView();
-
+		Bundle b = getIntent().getExtras();
+		Double lat = b.getDouble("lat");
+		Double lon = b.getDouble("lon");
+		url = "https://data.cityofchicago.org/resource/building-permits.json?%24select=street_number%2Cstreet_direction%2Cstreet_name%2C_issue_date%2Clatitude%2Clongitude%2C_permit_type%2Cwork_description%2Cpermit_&%24where=%20within_circle(location,%20"+lat+","+lon+",%2050)";
 		// Listview on item click listener
 		lv.setOnItemClickListener(new OnItemClickListener() {
 
@@ -181,6 +185,13 @@ public class Building extends ListActivity {
 			setListAdapter(adapter);
 		}
 
+	}
+	
+	@Override
+	public void onBackPressed() {
+		Intent in = new Intent(Building.this,MainActivity.class);
+		startActivity(in);
+		finish();
 	}
 
 }

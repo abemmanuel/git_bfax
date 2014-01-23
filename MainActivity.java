@@ -7,9 +7,13 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 
+import android.view.Menu;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.GoogleMap.OnMapClickListener;
+import com.google.android.gms.maps.GoogleMap.OnMapLongClickListener;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.model.CameraPosition;
@@ -19,16 +23,24 @@ import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapController;
 import com.google.android.maps.MyLocationOverlay;
 
-import android.view.Menu;
+import android.view.View;
+import android.view.View.OnClickListener;
 
-public class MainActivity extends MapActivity {
+import android.view.Menu;
+import android.widget.Button;
+
+public class MainActivity extends MapActivity implements
+OnMapClickListener, OnMapLongClickListener{
 
 	private GoogleMap mMap;
 	 private MapView mapView;
 	    private MyLocationOverlay myLocOverlay;
 	    MapController mc;
 	    LatLngBounds ch2;
-	    
+	    double lat;
+	    double lon;
+	    double lat_new;
+	    double lon_new;
 	@Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,9 +48,36 @@ public class MainActivity extends MapActivity {
         
 
         setUpMapIfNeeded();
+        
+        mMap.setOnMapLongClickListener(this); 
+        
+        Button mondayEdit= (Button)findViewById(R.id.button1);
+        mondayEdit.setOnClickListener(new OnClickListener() 
+        {   public void onClick(View v) 
+            {   
+                Intent intent = new Intent(MainActivity.this, Building.class);
+                Bundle b = new Bundle();
+                b.putDouble("lat", lat); 
+                b.putDouble("lon", lon); 
+                intent.putExtras(b); 
+                    startActivity(intent);      
+                    finish();
+            }
+        });
+        
     }
 
-
+	@Override
+	public void onMapLongClick(LatLng point) {
+	lat = point.latitude; 
+	lon = point.longitude;
+	}
+	@Override
+	public void onMapClick(LatLng point) {
+		lat = point.latitude; 
+		lon = point.longitude;
+	}
+	  
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -79,8 +118,10 @@ public class MainActivity extends MapActivity {
         	        
         	    }
             	  
-            	    double lat = myLocation.getLatitude();
-            	    double lon = myLocation.getLongitude();
+            	     lat = myLocation.getLatitude();
+            	     lon = myLocation.getLongitude();
+            	     //lat_new = myLocation.getLatitude();
+            	     //lon_new = myLocation.getLongitude();
             	    final LatLng ch2 = new LatLng(lat, lon);
             	    
             	     mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(ch2, 17));
@@ -100,6 +141,7 @@ public class MainActivity extends MapActivity {
         }
     }
     
+  
     
 }
     
