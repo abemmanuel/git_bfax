@@ -65,7 +65,7 @@ public class Building extends ListActivity {
 		Bundle b = getIntent().getExtras();
 		Double lat = b.getDouble("lat");
 		Double lon = b.getDouble("lon");
-		url = "https://data.cityofchicago.org/resource/building-permits.json?%24select=street_number%2Cstreet_direction%2Cstreet_name%2C_issue_date%2Clatitude%2Clongitude%2C_permit_type%2Cwork_description%2Cpermit_&%24where=%20within_circle(location,%20"+lat+","+lon+",%2050)";
+		url = "https://data.cityofchicago.org/resource/ydr8-5enu.json?%24select=street_number%2Cstreet_direction%2Cstreet_name%2C_issue_date%2Clatitude%2Clongitude%2C_permit_type%2Cwork_description%2Cpermit_&%24where=%20within_circle(location,%20"+lat+","+lon+",%2050)";
 		// Listview on item click listener
 		lv.setOnItemClickListener(new OnItemClickListener() {
 
