@@ -4,6 +4,7 @@ package org.cityofchicago.dob.bfax;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+import java.util.Locale;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -49,6 +50,7 @@ import android.view.View.OnClickListener;
 import android.view.Menu;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
 public class MainActivity extends MapActivity implements
 OnMapClickListener, OnMapLongClickListener{
@@ -63,6 +65,7 @@ OnMapClickListener, OnMapLongClickListener{
 	    double lat_new;
 	    double lon_new;
 	    EditText mEdit;
+	    double temp;
 	    
 	@Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,11 +95,12 @@ OnMapClickListener, OnMapLongClickListener{
         	}
         	else {
         		
-        		getLatLongFromAddress(mEdit.getText().toString()+",Chicago, IL");
+        		//getLatLongFromAddress(mEdit.getText().toString()+",Chicago, IL");
         		 Intent intent = new Intent(MainActivity.this, Building.class);
                  Bundle b = new Bundle();
-                 b.putDouble("lat", lat); 
-                 b.putDouble("lon", lon); 
+                 //b.putDouble("lat", lat); 
+                 //b.putDouble("lon", lon); 
+                 b.putString("address", mEdit.getText().toString());
                  intent.putExtras(b); 
                      startActivity(intent);      
                      finish();
@@ -114,13 +118,29 @@ OnMapClickListener, OnMapLongClickListener{
 	mMap.clear();
 	mMap.addMarker(new MarkerOptions()
     .position(point)
-    .title("You are here")           
+    .title("Your search location")           
     .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))); 
+	
+	//display the location address on the search box
+	Geocoder geocoder = new Geocoder(this, Locale.getDefault());
+	try {
+		List<Address> addresses = geocoder.getFromLocation(lat, lon, 1);
+		TextView t1 = (TextView) findViewById(R.id.editText1);
+		t1.setText( addresses.listIterator().next().getAddressLine(0));
+		//temp2 = addresses.size();
+		//temp1 = addresses.;
+	} catch (IOException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+	
+	
+	
 	}
 	@Override
 	public void onMapClick(LatLng point) {
-		lat = point.latitude; 
-		lon = point.longitude;
+		//lat = point.latitude; 
+		//lon = point.longitude;
 	}
 	  
     @Override
@@ -148,6 +168,9 @@ OnMapClickListener, OnMapLongClickListener{
             	//mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(chicago.getCenter(), 13));
 
             	 mMap.setMyLocationEnabled(true);
+            	 
+            		if (getIntent().getStringExtra("address") == null)
+            	    { 
             	LocationManager lm = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
         	    Location myLocation = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 
@@ -162,25 +185,41 @@ OnMapClickListener, OnMapLongClickListener{
         	        
         	        
         	    }
-            	  
-            	     lat = myLocation.getLatitude();
+        	   // Bundle b = getIntent().getExtras();
+               
+            	//	 temp = getIntent().getExtras().getDouble("lat");
+        	    	lat = myLocation.getLatitude();
             	     lon = myLocation.getLongitude();
+            	     }
+            	  
+            	  else {              	     //to return to the previous location on back button
+            		  
+            		  Bundle b = getIntent().getExtras();
+            	//	  temp = getIntent().getExtras().getDouble("lat");
+            	//	 lat = b.getDouble("lat");
+            		  
+            		 String adr = b.getString("address"); 
+            		 getLatLongFromAddress(adr+",Chicago, IL");
+            	  }
+
+            	  
             	     //lat_new = myLocation.getLatitude();
             	     //lon_new = myLocation.getLongitude();
             	    final LatLng ch2 = new LatLng(lat, lon);
             	    
             	     mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(ch2, 17));
-            	     /*CameraPosition cameraPosition = CameraPosition.builder()
-            	                .target(ch2)
-            	                .zoom(17)
-            	    		 	.tilt(0)
-            	               .bearing(0)
-            	                .build();
-            	        
-            	        // Animate the change in camera view over 2 seconds
-            	        mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition),
-            	                2000, null);*/
-            	       // mMap.setBuildingsEnabled(false);
+            	   //display the current location address on the search box
+            	 	Geocoder geocoder = new Geocoder(this, Locale.getDefault());
+            	 	try {
+            	 		List<Address> addresses = geocoder.getFromLocation(lat, lon, 1);
+            	 		TextView t1 = (TextView) findViewById(R.id.editText1);
+            	 		t1.setText( addresses.listIterator().next().getAddressLine(0));
+            	 		//temp2 = addresses.size();
+            	 		//temp1 = addresses.;
+            	 	} catch (IOException e) {
+            	 		// TODO Auto-generated catch block
+            	 		e.printStackTrace();
+            	 	}
             	
             }
         }
@@ -203,6 +242,12 @@ OnMapClickListener, OnMapLongClickListener{
     	                     // (int) (location.getLongitude() * 1E6));
 lat=location.getLatitude();
 lon=location.getLongitude();
+LatLng point = new LatLng(lat,lon);
+
+mMap.addMarker(new MarkerOptions()
+.position(point)
+.title("Your search location")           
+.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))); 
     	     //return p1;
     	}catch (Exception e) {
             //return false;
